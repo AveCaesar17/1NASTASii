@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+
+  waf:
+    build:
+      context: ./
+      dockerfile: alpine-nginx.dockerfile
+    volumes:
+      - ./ssl/cert.crt:/usr/local/cert.crt:rw
+      - ./ssl/cert.key:/usr/local/cert.key:rw
