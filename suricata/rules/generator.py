@@ -51,7 +51,7 @@ def main():
 
     input_yaml_path = sys.argv[1]
     
-    output_rules_path = "my.rules"
+    output_rules_path = "suricata.rules"
     if len(sys.argv) >= 3:
         output_rules_path = sys.argv[2]
 
