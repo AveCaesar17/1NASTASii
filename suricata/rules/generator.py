@@ -29,8 +29,9 @@ def generate_suricata_rule(rule, sid, action=None):
     destination_ips = rule['destination']['ip']
     if isinstance(destination_ips, list):
         destination_ips_str = ', '.join(destination_ips)
+        destination_ips_str = f'[{destination_ips_str}]'
     else:
-        destination_ips_str = destination_ips.replace(',', ', ')
+        destination_ips_str = destination_ips
 
     return template.format(
         name=rule['name'],
@@ -51,7 +52,7 @@ def main():
 
     input_yaml_path = sys.argv[1]
     
-    output_rules_path = "suricata.rules"
+    output_rules_path = "generated_rules.txt"
     if len(sys.argv) >= 3:
         output_rules_path = sys.argv[2]
 
