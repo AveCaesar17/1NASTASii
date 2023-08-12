@@ -11,6 +11,6 @@ iptables -I INPUT -j NFQUEUE --queue-bypass
 iptables -I OUTPUT -j NFQUEUE --queue-bypass
 # Started suricata
 #rm -r /etc/suricata/rules/
-exec /bin/sh -c "python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml"
+python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml
 exec /bin/sh -c "/usr/bin/suricata -c /etc/suricata/suricata.yaml -q 0 -v"
 
