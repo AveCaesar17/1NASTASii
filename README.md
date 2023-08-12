@@ -1,0 +1,1 @@
+docker run     --cap-add=sys_nice     --cap-add=net_admin     --net=host -d image_id

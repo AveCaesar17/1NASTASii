@@ -21,8 +21,11 @@ COPY ./suricata/suricata-update-cron /etc/crontabs/suricata-update-cron
 COPY ./suricata/docker-entrypoint.sh /tmp/docker-entrypoint.sh
 COPY ./suricata/suricata.yaml /etc/suricata/suricata.yaml
 COPY ./suricata/rules/my.rules /var/lib/suricata/rules/suricata.rules
+COPY ./suricata/rules/generator.py /var/lib/suricata/rules/generator.py
+COPY ./rules.yml /var/lib/suricata/rules/rules.yml
 # Forwarding suricata application logs to stdout
 RUN chmod +x /etc/crontabs/suricata-update-cron;\
-    chmod +x /tmp/docker-entrypoint.sh
-RUN ls -al /bin/
+    chmod +x /tmp/docker-entrypoint.sh;\
+    chmod +x /var/lib/suricata/rules/generator.py;\
+    chmod 400 /var/lib/suricata/rules/rules.yml
 ENTRYPOINT [ "/tmp/docker-entrypoint.sh" ]

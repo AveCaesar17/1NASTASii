@@ -1,0 +1,46 @@
+suricata:
+  - rule: 
+      name: Accept SSH
+      action: pass
+      protocol: tcp
+      source: 
+        ip: $EXTERNAL_NET
+        port: any
+      destination:
+        ip: $EXTERNAL_NET
+        port: 22
+      direction: ->
+  - rule: 
+      name: drop icmp 8.8.8.8
+      action: [drop,alert]
+      protocol: icmp
+      source: 
+        ip: any
+        port: any
+      destination:
+        ip: [8.8.8.8,8.8.4.4]
+        port: any
+      direction: ->
+  - rule: 
+      name: drop all
+      action: [drop,alert]
+      protocol: ip
+      source:
+        ip: any
+        port: any
+      destination:
+        ip: any
+        port: any
+      direction: ->
+
+
+  
+ 
+ 
+ 
+ 
+ 
+
+          
+
+    

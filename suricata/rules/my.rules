@@ -1,9 +1,9 @@
 #alert icmp 213.226.100.158 any -> 8.8.8.8 any (msg:"TEST ping google"; classtype:not-suspicious; sid:4294967294;)
-drop icmp any any -> 8.8.8.8 any (msg:"ICMP Detected to 8.8.8.8"; sid:4294967294; rev:1; )
+drop icmp any any -> 8.8.8.8 any (msg:"ICMP Detected to 8.8.8.8"; sid:10000002; rev:1; )
 #alert ip $EXTERNAL_NET $SHELLCODE_PORTS -> 213.226.100.158 any (msg:"GPL SHELLCODE sparc NOOP"; content:"|A6 1C C0 13 A6 1C C0 13 A6 1C C0 13 A6 1C C0 13|"; reference:arachnids,355; classtype:shellcode-detect; sid:4292967294; rev:6; metadata:created_at 2010_09_2i3, updated_at 2010_09_23;)
 drop http any any -> 213.226.100.158 !80 (msg:"HTTP REQUEST on non-HTTP port"; flow:to_client, not_established; classtype:misc-activity; sid:4294967293;)
 alert ip 213.226.100.158 any -> $EXTERNAL_NET any (msg:"ET MALWARE Kimsuky Related Activity Sending Windows Information (POST)"; flow:established,to_server; ip.method; content:"POST"; ip.uri; content:"/info.php?"; startswith; content:"=C|3a 5c|Program"; fast_pattern; ip.user_agent; content:"Mozilla/4.0|20|(compatible|3b 20|Win32|3b 20|WinHttp.WinHttpRequest.5)"; ip.request_body; content:"v="; startswith; content:"|20|svchost.exe|20|"; content:"&r="; reference:md5,40de99fb06e52e3364f2cd70f100ff71; reference:url,twitter.com/h2jazi/status/1465402736996933640; classtype:trojan-activity; sid:2034560; rev:1; metadata:attack_target Client_Endpoint, created_at 2021_11_30, deployment Perimeter, former_category MALWARE, malware_family Kimsuky, performance_impact Low, signature_severity Major, updated_at 2021_11_30;)
 drop ip any any -> any any (msg:"Block"; sid:2034561;)
-#pass tcp $EXTERNAL_NET any -> $EXTERNAL_NET 22 (msg:"Accept SSH!"; sid:10000001; rev: 1;)
+pass tcp $EXTERNAL_NET any -> $EXTERNAL_NET 22 (msg:"Accept SSH!"; sid:10000001; rev: 1;)
 
 

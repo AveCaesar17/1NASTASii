@@ -2,8 +2,6 @@
 
 # Update suricata rules
 #suricata-update
-#SAsdaasd
-echo "ss"
 # Start cron
 crond
 # Add cronjob
@@ -13,5 +11,6 @@ iptables -I INPUT -j NFQUEUE --queue-bypass
 iptables -I OUTPUT -j NFQUEUE --queue-bypass
 # Started suricata
 #rm -r /etc/suricata/rules/
+exec /bin/sh -c "/var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml"
 exec /bin/sh -c "/usr/bin/suricata -c /etc/suricata/suricata.yaml -q 0 -v"
 
