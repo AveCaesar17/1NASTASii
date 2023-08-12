@@ -2,7 +2,7 @@
 
 # Update suricata rules
 #suricata-update
-python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml
+python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml /var/lib/suricata/rules/suricata.rules
 # Start cron
 crond
 # Add cronjob
