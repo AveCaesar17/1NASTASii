@@ -20,7 +20,6 @@ COPY ./suricata/suricata-update.sh /etc/suricata/suricata-update.sh
 COPY ./suricata/suricata-update-cron /etc/crontabs/suricata-update-cron
 COPY ./suricata/docker-entrypoint.sh /tmp/docker-entrypoint.sh
 COPY ./suricata/suricata.yaml /etc/suricata/suricata.yaml
-COPY ./suricata/rules/my.rules /var/lib/suricata/rules/suricata.rules
 COPY ./suricata/rules/generator.py /var/lib/suricata/rules/generator.py
 COPY ./rules.yml /var/lib/suricata/rules/rules.yml
 # Forwarding suricata application logs to stdout
