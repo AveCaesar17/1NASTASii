@@ -36,7 +36,7 @@ suricata:
       name: import 
       action: drop
       import: 
-        url: https://github.com/AveCaesar17/1NASTASii/blob/main/nmap.rules
+        url: https://raw.githubusercontent.com/AveCaesar17/1NASTASii/main/nmap.rules
         
   - rule: 
       name: Nmap
