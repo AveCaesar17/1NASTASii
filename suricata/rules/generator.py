@@ -1,12 +1,38 @@
 import sys
 import yaml
+import requests
+def replace_first_rule(rule_text,rep_rule):
+    lines = rule_text.split()
+    
+    if lines == []:
+        return "#"
+    if lines[0] != rep_rule and lines[0] != "#":
+        if lines[0].startswith("#"):
+            return "#"
+        
+        lines[0] = rep_rule
+        
+    return ' '.join(lines)
 
 def generate_suricata_rules(rules):
     generated_rules = []
     sid_counter = 10000001
 
+    
     for rule in rules:
         rule_data = rule['rule']
+
+        if 'import' in rule_data:
+            import_data = rule_data['import']
+            rep_rule = rule_data['action']
+            if 'url' in import_data:
+                response = requests.get(import_data['url'])
+                if response.status_code == 200:
+                    imported_rules = response.text.split('\n')
+                    for imported_rule in imported_rules:
+                        imported_rule = replace_first_rule(imported_rule,rep_rule)
+                        generated_rules.append(imported_rule)
+            continue
 
         if isinstance(rule_data['action'], list):
             for action in rule_data['action']:
@@ -63,7 +89,7 @@ def main():
 
     with open(output_rules_path, 'w') as output_file:
         for rule_text in generated_rules:
-            output_file.write(rule_text)
+            output_file.write(rule_text + '\n')
 
     print(f"Generated rules saved to {output_rules_path}")
 

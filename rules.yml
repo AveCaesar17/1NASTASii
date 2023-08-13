@@ -32,6 +32,12 @@ suricata:
         ip: any
         port: any
       direction: ->
+  - rule: 
+      name: import 
+      action: drop
+      import: 
+        url: https://raw.githubusercontent.com/lcpdn/docs-suricata/master/emerging-scan.rules
+        
 
 
   
