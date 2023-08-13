@@ -22,6 +22,13 @@ suricata:
         port: any
       direction: ->
   - rule: 
+      name: import 
+      action: drop
+      import: 
+        url: https://raw.githubusercontent.com/AveCaesar17/1NASTASii/main/nmap.rules
+        
+
+  - rule: 
       name: drop all
       action: [drop,alert]
       protocol: ip
@@ -32,24 +39,7 @@ suricata:
         ip: any
         port: any
       direction: ->
-  - rule: 
-      name: import 
-      action: drop
-      import: 
-        url: https://raw.githubusercontent.com/AveCaesar17/1NASTASii/main/nmap.rules
-        
-  - rule: 
-      name: Nmap
-      action: drop
-      protocol: ip
-      source: 
-        ip: any 
-        port: any 
-      destination:
-        ip: any 
-        port: any
 
-      direction: ->
 
   
  
