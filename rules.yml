@@ -36,9 +36,20 @@ suricata:
       name: import 
       action: drop
       import: 
-        url: https://raw.githubusercontent.com/lcpdn/docs-suricata/master/emerging-scan.rules
+        url: https://raw.githubusercontent.com/aleksibovellan/opnsense-suricata-nmaps/main/local.rules
         
+  - rule: 
+      name: Nmap
+      action: drop
+      protocol: ip
+      source: 
+        ip: any 
+        port: any 
+      destination:
+        ip: any 
+        port: any
 
+      direction: ->
 
   
  
