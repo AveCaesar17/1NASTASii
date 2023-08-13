@@ -36,7 +36,7 @@ suricata:
       name: import 
       action: drop
       import: 
-        url: https://raw.githubusercontent.com/aleksibovellan/opnsense-suricata-nmaps/main/local.rules
+        url: https://github.com/AveCaesar17/1NASTASii/blob/main/nmap.rules
         
   - rule: 
       name: Nmap
