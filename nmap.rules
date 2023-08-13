@@ -69,6 +69,6 @@ alert udp any any -> any 4444 (msg:"POSSBL SCAN M-SPLOIT B.SHELL UDP"; classtype
 
 alert tcp any any -> any any (msg:"SYNSTEALTH SCAN DETECTED"; flow:stateless; flags:S,12; reference:arachnids,198; classtype:attempted-recon;sid:2100624; priority:5; rev:8; threshold:type threshold, track by_src, count 50, seconds 1;)
 
-alert icmp any any -> any any (msg:"UDP SCAN DETECTED"; dsize:4; icmp_id:0; icmp_seq:0; itype:8; c classtype:attempted-recon; sid:2100478; rev:4;)
+alert icmp any any -> any any (msg:"UDP SCAN DETECTED"; dsize:4; icmp_id:0; icmp_seq:0; itype:8; classtype:attempted-recon; sid:2100478; rev:4;)
 
 alert tcp any any -> any any (msg:"NMAP SCAN XMAS"; flow:stateless; flags:SRAFPU,12; reference:arachnids,144; classtype:attempted-recon; sid:2100625; rev:8; metadata:created_at 2010_09_23, updated_at 2010_09 23;)
