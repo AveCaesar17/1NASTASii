@@ -11,6 +11,7 @@ RUN    apk add iptables
 RUN    apk add python3 
 RUN    apk add py3-pip; 
 RUN    pip install suricata-update
+RUN    pip install requests
 RUN    apk add suricata
 
 # Install Suricata-update utility https://github.com/OISF/suricata-update

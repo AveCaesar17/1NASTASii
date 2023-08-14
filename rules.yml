@@ -49,7 +49,7 @@ suricata:
       name: import 
       action: drop
       import: 
-        url: https://raw.githubusercontent.com/lcpdn/docs-suricata/master/emerging-scan.rules
+        url: https://raw.githubusercontent.com/AveCaesar17/1NASTASii/main/ssh.rules
         
 
 hosts: 
