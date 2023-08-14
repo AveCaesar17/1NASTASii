@@ -22,13 +22,6 @@ suricata:
         port: any
       direction: ->
   - rule: 
-      name: import 
-      action: drop
-      import: 
-        url: https://raw.githubusercontent.com/AveCaesar17/1NASTASii/main/nmap.rules
-        
-
-  - rule: 
       name: drop all
       action: [drop,alert]
       protocol: ip
@@ -39,7 +32,31 @@ suricata:
         ip: any
         port: any
       direction: ->
+  - route: 
+      name: forward ssh 
+      protocol: tcp
+      source: 
+        ip: any 
+        port: any 
+      destination: 
+        ip: $EXTERNAL_NET
+        port: 2222
+      forward: 
+        host: server1 
+        service: ssh
+      direction: ->
 
+hosts: 
+  - host: 
+      name: server1 
+      ip: 77.232.132.99
+      services: 
+        - service: 
+            name: ssh
+            port: 22
+        - service: 
+            name: http
+            port: 80  
 
   
  
