@@ -45,6 +45,12 @@ suricata:
         host: server1 
         service: ssh
       direction: ->
+  - rule: 
+      name: import 
+      action: drop
+      import: 
+        url: https://raw.githubusercontent.com/lcpdn/docs-suricata/master/emerging-scan.rules
+        
 
 hosts: 
   - host: 
