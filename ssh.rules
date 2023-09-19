@@ -20,7 +20,8 @@ drop tcp $EXTERNAL_NET any -> any 22 (msg:"SERIALIZINGME SCAN PuTTY Based SSH Co
 # Only enable if OpenSSH key scanner isn't used
 drop tcp $EXTERNAL_NET any -> any 22 (msg:"SERIALIZINGME SCAN OpenSSH-keyscan Based SSH Connections Not Allowed"; flow:established,to_server; content:"SSH-"; content:"OpenSSH-keyscan"; within:20; reference:url,www.serializing.me/2015/08/12/ssh-brute-force-and-suricata/; classtype:attempted-admin; sid:5000010; rev:1;)
 
-
+drop tcp $EXTERNAL_NET any -> any any (msg:"LOCAL DOS SYN packet flood inbound, Potential DOS"; flow:to_server; flags: S,12; threshold: type both, track by_dst, count 5000, seconds 5; classtype:misc-activity; sid:5;)
+drop tcp $HOME_NET any -> any any (msg:"LOCAL DOS SYN packet flood outbound, Potential DOS"; flow:to_server; flags: S,12; threshold: type both, track by_dst, count 5000, seconds 5; classtype:misc-activity; sid:6;)
 
 # Only enable if OpenSSH isn't used
 drop tcp $EXTERNAL_NET any -> any 22 (msg:"SERIALIZINGME SCAN OpenSSH Based SSH Connections Not Allowed"; flow:established,to_server; content:"SSH-"; content:"OpenSSH"; within:20; reference:url,www.serializing.me/2015/08/12/ssh-brute-force-and-suricata/; classtype:attempted-admin; sid:5000011; rev:1;)
