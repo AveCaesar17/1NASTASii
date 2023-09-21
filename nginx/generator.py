@@ -22,21 +22,22 @@ def generate_nginx_config(data):
 def generate_proxy(proxy,data):
     nginx_config = ""
     forward_host = proxy["proxy"]["endpoint"]["upstream"]
+    nginx_config += f"upstream {proxy['proxy']['name']} {{\n"
     for item in proxy["proxy"]["endpoint"]["upstream"]:
-        #nginx_config += f"upstream {proxy['proxy']['name']} {{\n"
+        
         for upstream in item['hosts']: 
             for host in data['hosts']: 
                 if host["host"]["name"] == upstream:
-                    nginx_config += f"upstream {host['host']['name']}_{item['service']} {{\n"
+                  #  nginx_config += f"upstream {host['host']['name']}_{item['service']} {{\n"
                     for ip in host['host']['ip']:
                         for service in host['host']['services']:
                             if service["service"]["name"] == item['service']:
                                 upstream_config = f"         server {ip}:{service['service']['port']};\n" 
                                 nginx_config += upstream_config 
-                    if "options" in item:
-                        for option in item['options']:
-                            nginx_config +=f"         {option} {item['options'][option]};\n"
-                    nginx_config += "}\n" 
+    if "options" in item:
+        for option in item['options']:
+            nginx_config +=f"         {option} {item['options'][option]};\n"
+    nginx_config += "}\n" 
     nginx_config += "server {\n"
     nginx_config += f"    listen {proxy['proxy']['destination']['port']}"
     if "ssl" in proxy['proxy']['endpoint']: 
@@ -51,13 +52,19 @@ def generate_proxy(proxy,data):
     if "hostname" in proxy['proxy']['endpoint']:
         nginx_config += f"    server_name {proxy['proxy']['endpoint']['hostname']};\n"
     for location in proxy['proxy']['endpoint']['url']: 
-        nginx_config += f"    location {location['path']} {{\n"
+        nginx_config += f"\n    location {location['path']} {{\n"
         if 'options' in location:
             for option in location['options']:
                 nginx_config += f"       {option} {location['options'][option]};\n"
         for host_pass in proxy['proxy']['endpoint']['upstream']:
+           
             if host_pass['id'] == location['upstream_group']:
-                nginx_config += f"    http://{host_pass['id']}"
+                
+                if host_pass['ssl'] is True:
+                    nginx_config += f"       https://{proxy['proxy']['name']};\n"
+                else:
+                    nginx_config += f"       http://{proxy['proxy']['name']};\n"
+                nginx_config += "   }\n"
         
             
                                     
