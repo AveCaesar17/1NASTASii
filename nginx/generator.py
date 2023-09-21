@@ -24,7 +24,6 @@ def generate_proxy(proxy,data):
     forward_host = proxy["proxy"]["endpoint"]["upstream"]
     nginx_config += f"upstream {proxy['proxy']['name']} {{\n"
     for item in proxy["proxy"]["endpoint"]["upstream"]:
-        
         for upstream in item['hosts']: 
             for host in data['hosts']: 
                 if host["host"]["name"] == upstream:
@@ -36,7 +35,8 @@ def generate_proxy(proxy,data):
                                 nginx_config += upstream_config 
     if "options" in item:
         for option in item['options']:
-            nginx_config +=f"         {option} {item['options'][option]};\n"
+            for param in option.keys():
+                nginx_config +=f"         {param} {option[param]};\n"
     nginx_config += "}\n" 
     nginx_config += "server {\n"
     nginx_config += f"    listen {proxy['proxy']['destination']['port']}"
@@ -55,17 +55,16 @@ def generate_proxy(proxy,data):
         nginx_config += f"\n    location {location['path']} {{\n"
         if 'options' in location:
             for option in location['options']:
-                nginx_config += f"       {option} {location['options'][option]};\n"
+                for param in option.keys():
+                    nginx_config += f"       {param} {option[param]};\n"
         for host_pass in proxy['proxy']['endpoint']['upstream']:
-           
             if host_pass['id'] == location['upstream_group']:
-                
                 if host_pass['ssl'] is True:
                     nginx_config += f"       https://{proxy['proxy']['name']};\n"
                 else:
                     nginx_config += f"       http://{proxy['proxy']['name']};\n"
                 nginx_config += "   }\n"
-        
+    nginx_config += "}\n"  
             
                                     
 
