@@ -28,4 +28,6 @@ RUN chmod +x /etc/crontabs/suricata-update-cron;\
     chmod +x /tmp/docker-entrypoint.sh;\
     chmod +x /var/lib/suricata/rules/generator.py;\
     chmod 400 /var/lib/suricata/rules/rules.yml
+RUN python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml /var/lib/suricata/rules/suricata.rules;\
+    chmod 400 /var/lib/suricata/rules/suricata.rules
 ENTRYPOINT [ "/tmp/docker-entrypoint.sh" ]
