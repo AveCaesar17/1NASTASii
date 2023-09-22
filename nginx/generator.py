@@ -21,13 +21,11 @@ def generate_nginx_config(data):
     return nginx_config
 def generate_proxy(proxy,data):
     nginx_config = ""
-    forward_host = proxy["proxy"]["endpoint"]["upstream"]
     nginx_config += f"upstream {proxy['proxy']['name']} {{\n"
     for item in proxy["proxy"]["endpoint"]["upstream"]:
         for upstream in item['hosts']: 
             for host in data['hosts']: 
                 if host["host"]["name"] == upstream:
-                  #  nginx_config += f"upstream {host['host']['name']}_{item['service']} {{\n"
                     for ip in host['host']['ip']:
                         for service in host['host']['services']:
                             if service["service"]["name"] == item['service']:
@@ -69,7 +67,8 @@ def generate_proxy(proxy,data):
                                     
 
     print(nginx_config)
-                    
+    output_file = f"{str(proxy['proxy']['name']).replace(' ','_')}.conf"
+    create_file(nginx_config,output_file)
          
         
 def generate_route(route,data):

@@ -19,7 +19,6 @@ def generate_suricata_rules(rules,hosts):
     sid_counter = 10000001
     
     for rule in rules:
-        print(rule)
         
         if list(rule.keys())[0] == 'rule':
             rule_data = rule['rule']
@@ -47,28 +46,33 @@ def generate_suricata_rules(rules,hosts):
         elif list(rule.keys())[0] == 'route':
             rule_data = rule['route']
             action="pass"
-            print(rule_data)
             generated_rule = generate_suricata_rule(rule_data, sid_counter, action)
             generated_rules.append(generated_rule)
             sid_counter += 1
             route = genereate_route(hosts, rule_data, sid_counter, action)
             generated_rules.append(route)
             sid_counter += 1
+        elif list(rule.keys())[0] == 'proxy':
+            rule_data = rule['proxy']
+            action="pass"
+            generated_rule = generate_suricata_rule(rule_data, sid_counter, action)
+            generated_rules.append(generated_rule)
+            sid_counter += 1
+            for upstream in rule_data['endpoint']['upstream']:
+                for host in upstream['hosts']:
+                    route = genereate_proxy(hosts, upstream, sid_counter, action)
+                    generated_rules.append(route)
+                    sid_counter += 1
     return generated_rules
 def genereate_route(hosts,rule, sid,action=None):
     template = '#{name}\n{action} {protocol} {source_ip} {source_port} -> {destination_ip} {destination_port} (msg:"{name}"; sid:{sid}; rev:{rev};)\n'
-    r = hosts
-    print(hosts)
     for host in hosts: 
-        if host['host']['name'] == rule['forward']['host']:
+        if host['host']['name'] == rule['endpoint']['host']:
             for service in host['host']['services']:
-                print("test")
-                print(service)
-                print(host['host']['services'])
-                if service['service']['name'] == rule['forward']['service']:
+                
+                if service['service']['name'] == rule['endpoint']['service']:
                     destination_ips = host['host']['ip']
                     destination_port = service['service']['port']
-                    print("test")
     if isinstance(destination_ips, list):
         destination_ips_str = ', '.join(destination_ips)
         destination_ips_str = f'[{destination_ips_str}]'
@@ -86,6 +90,34 @@ def genereate_route(hosts,rule, sid,action=None):
         sid=sid,
         rev=rule.get('rev', 1)
     )
+def genereate_proxy(hosts,rule, sid,action=None):
+    template = '#{name}\n{action} {protocol} {source_ip} {source_port} -> {destination_ip} {destination_port} (msg:"{name}"; sid:{sid}; rev:{rev};)\n'
+    for host in hosts: 
+        for server in rule['hosts']: 
+            if host['host']['name'] == server: 
+                for service in host['host']['services']:
+                    if service['service']['name'] == rule['service']:
+                                destination_ips = host['host']['ip']
+                                destination_port = service['service']['port']
+
+      
+                                if isinstance(destination_ips, list):
+                                    destination_ips_str = ', '.join(destination_ips)
+                                    destination_ips_str = f'[{destination_ips_str}]'
+                                else:
+                                    destination_ips_str = destination_ips
+
+                                return template.format(
+                                    name=rule['id'],
+                                    action=action,
+                                    protocol="tcp",
+                                    source_ip="any",
+                                    source_port="any",
+                                    destination_ip=destination_ips_str,
+                                    destination_port=destination_port,
+                                    sid=sid,
+                                    rev=rule.get('rev', 1)
+                                )
 def generate_suricata_rule(rule, sid, action=None):
     template = '#{name}\n{action} {protocol} {source_ip} {source_port} -> {destination_ip} {destination_port} (msg:"{name}"; sid:{sid}; rev:{rev};)\n'
 
@@ -125,7 +157,7 @@ def main():
     with open(input_yaml_path, 'r') as yaml_file:
         data = yaml.safe_load(yaml_file)
 
-    generated_rules = generate_suricata_rules(data['suricata'],data['hosts'])
+    generated_rules = generate_suricata_rules(data['config'],data['hosts'])
     with open(output_rules_path, 'w') as output_file:
         for rule_text in generated_rules:
             output_file.write(rule_text + '\n')
