@@ -1,8 +1,11 @@
 import yaml
 import argparse
+import os
+import sys
+
 
 def create_file(nginx_config, output_file): 
-    with open(output_file, "w") as f:
+    with open(f"/usr/local/openresty/nginx/{output_file}", "w") as f:
         f.write(nginx_config)
     return nginx_config
 
@@ -42,8 +45,17 @@ def generate_proxy(proxy,data):
         nginx_config += " ssl;\n"
         ssl_config = ""
         if "ssl_certificate" in proxy['proxy']['endpoint']['ssl']:
-            ssl_config += f"    ssl_certificate {proxy['proxy']['endpoint']['ssl']['ssl_certificate']};\n"
-        if "ssl_certificate_key" in proxy['proxy']['endpoint']['ssl']: 
+        
+            with open(f"{os.getcwd()}/{proxy['proxy']['endpoint']['ssl']['ssl_certificate']}", "r") as f:
+                read_data = f.read()
+            output_file = f"certs/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.crt"
+            create_file(read_data,output_file)
+            ssl_config += f"    ssl_certificate {output_file};\n"
+        if "ssl_certificate_key" in proxy['proxy']['endpoint']['ssl']:
+            with open(f"{os.getcwd()}/{proxy['proxy']['endpoint']['ssl']['ssl_certificate_key']}", "r") as f:
+                read_data = f.read()
+            output_file = f"certs/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.key"
+            create_file(read_data,output_file)
             ssl_config += f"    ssl_certificate {proxy['proxy']['endpoint']['ssl']['ssl_certificate_key']}"
         nginx_config += ssl_config
     nginx_config += ";\n"
@@ -58,15 +70,15 @@ def generate_proxy(proxy,data):
         for host_pass in proxy['proxy']['endpoint']['upstream']:
             if host_pass['id'] == location['upstream_group']:
                 if host_pass['ssl'] is True:
-                    nginx_config += f"       https://{proxy['proxy']['name']};\n"
+                    nginx_config += f"       proxy_pass https://{proxy['proxy']['name']};\n"
                 else:
-                    nginx_config += f"       http://{proxy['proxy']['name']};\n"
+                    nginx_config += f"       proxy_pass http://{proxy['proxy']['name']};\n"
                 nginx_config += "   }\n"
     nginx_config += "}\n"  
             
                                     
 
-    output_file = f"/usr/local/openresty/nginx/conf/conf.d/{str(proxy['proxy']['name']).replace(' ','_')}.conf"
+    output_file = f"conf/stream/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
          
         
@@ -93,7 +105,7 @@ def generate_route(route,data):
                 nginx_config += proxy_pass
                 nginx_config += f"}}\n\n"
     
-    output_file = f"/usr/local/openresty/nginx/conf/stream/{str(route['route']['name']).replace(' ','_')}.conf"
+    output_file = f"conf/conf.d/{str(route['route']['name']).replace(' ','_')}/{str(route['route']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
     
 
@@ -103,7 +115,8 @@ def main():
     args = parser.parse_args()
 
     input_file = args.input_file
-
+    path = str(sys.argv[1])[:str(sys.argv[1]).rfind("/")]
+    os.chdir(path)
     with open(input_file, "r") as f:
         yaml_data = yaml.safe_load(f)
 
@@ -112,4 +125,6 @@ def main():
    
 
 if __name__ == "__main__":
+    
+    
     main()

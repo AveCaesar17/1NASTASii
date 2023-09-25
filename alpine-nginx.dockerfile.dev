@@ -38,7 +38,8 @@ RUN apk add --no-cache --virtual .build-deps \
         certbot \
         luarocks5.1 \
         apache2-utils; \
-        luarocks-5.1 install lua-resty-auto-ssl;
+    luarocks-5.1 install lua-resty-auto-ssl;\
+    pip3 install pyyaml;  
 
 
 WORKDIR /opt
@@ -105,17 +106,14 @@ COPY ./hello.sh /hello.sh
 
 COPY ./nginx/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 
-COPY ./nginx/conf.d /usr/local/openresty/nginx/conf/conf.d
+COPY ./nginx/generator.py /usr/local/openresty/generator.py
 
-COPY ./nginx/generator.py /usr/local/openresty/nginx/generator.py
+COPY ./rules /usr/local/openresty/rules
+RUN mkdir -p /usr/local/openresty/nginx/conf/conf.d/;\
+    mkdir -p /usr/local/openresty/nginx/conf/stream/;
+RUN python3 /usr/local/openresty/generator.py /usr/local/openresty/rules/rules.yml
 
-COPY ./rules/rules.yml /usr/local/openresty/nginx/rules.yml
-
-RUN python3 /usr/local/openresty/nginx/rules.yml
-
-RUN adduser -D user --shell /usr/sbin/nologin
+RUN adduser -D nginx --shell /usr/sbin/nologin
 
 RUN which openssl
-
 CMD ["/entrypoint.sh"]
-

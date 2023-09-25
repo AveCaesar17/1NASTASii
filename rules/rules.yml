@@ -91,8 +91,8 @@ config:
               
               - proxy_intercept_errors: on
         ssl: 
-          ssl_certificate: /etc/nginx/ssl/cert.crt
-          ssl_certificate_key: /etc/nginx/ssl/cert.key
+          ssl_certificate: resources/ssl/cert.crt
+          ssl_certificate_key: resources/ssl/cert.key
         optional:
           log_format:
             name: custom_log
