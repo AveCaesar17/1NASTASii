@@ -86,8 +86,8 @@ config:
             upstream_group: back2
             options: 
               - proxy_set_header:        Host $host
-              - proxy_set_header: X-Real-IP $remote_addr;
-              - proxy_set_header: X-Forwarded-For $remote_addr;
+              - proxy_set_header: X-Real-IP $remote_addr
+              - proxy_set_header: X-Forwarded-For $remote_addr
               
               - proxy_intercept_errors: on
         ssl: 

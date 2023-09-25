@@ -111,6 +111,7 @@ COPY ./nginx/generator.py /usr/local/openresty/generator.py
 COPY ./rules /usr/local/openresty/rules
 RUN mkdir -p /usr/local/openresty/nginx/conf/conf.d/;\
     mkdir -p /usr/local/openresty/nginx/conf/stream/;
+             
 RUN python3 /usr/local/openresty/generator.py /usr/local/openresty/rules/rules.yml
 
 RUN adduser -D nginx --shell /usr/sbin/nologin

@@ -5,8 +5,12 @@ import sys
 
 
 def create_file(nginx_config, output_file): 
+    path = str(output_file)[:str(output_file).rfind("/")]
+    if not os.path.exists(f"/usr/local/openresty/nginx/{path}"):
+        os.makedirs(f"/usr/local/openresty/nginx/{path}")
     with open(f"/usr/local/openresty/nginx/{output_file}", "w") as f:
         f.write(nginx_config)
+    f.close()
     return nginx_config
 
 def generate_nginx_config(data):
@@ -56,7 +60,7 @@ def generate_proxy(proxy,data):
                 read_data = f.read()
             output_file = f"certs/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.key"
             create_file(read_data,output_file)
-            ssl_config += f"    ssl_certificate {proxy['proxy']['endpoint']['ssl']['ssl_certificate_key']}"
+            ssl_config += f"    ssl_certificate_key {output_file}"
         nginx_config += ssl_config
     nginx_config += ";\n"
     if "hostname" in proxy['proxy']['endpoint']:
@@ -105,7 +109,7 @@ def generate_route(route,data):
                 nginx_config += proxy_pass
                 nginx_config += f"}}\n\n"
     
-    output_file = f"conf/stream/{str(route['route']['name']).replace(' ','_')}/{str(route['route']['name']).replace(' ','_')}.conf"
+    output_file = f"{str(route['route']['name']).replace(' ','_')}/{str(route['route']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
     
 
