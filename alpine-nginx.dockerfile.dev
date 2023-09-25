@@ -107,6 +107,12 @@ COPY ./nginx/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 
 COPY ./nginx/conf.d /usr/local/openresty/nginx/conf/conf.d
 
+COPY ./nginx/generator.py /usr/local/openresty/nginx/generator.py
+
+COPY ./rules/rules.yml /usr/local/openresty/nginx/rules.yml
+
+RUN python3 /usr/local/openresty/nginx/rules.yml
+
 RUN adduser -D user --shell /usr/sbin/nologin
 
 RUN which openssl

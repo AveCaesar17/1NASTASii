@@ -66,7 +66,7 @@ def generate_proxy(proxy,data):
             
                                     
 
-    output_file = f"{str(proxy['proxy']['name']).replace(' ','_')}.conf"
+    output_file = f"/usr/local/openresty/nginx/conf/conf.d/{str(proxy['proxy']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
          
         
@@ -93,7 +93,7 @@ def generate_route(route,data):
                 nginx_config += proxy_pass
                 nginx_config += f"}}\n\n"
     
-    output_file = f"{str(route['route']['name']).replace(' ','_')}.conf"
+    output_file = f"/usr/local/openresty/nginx/conf/stream/{str(route['route']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
     
 
