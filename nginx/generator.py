@@ -78,7 +78,7 @@ def generate_proxy(proxy,data):
             
                                     
 
-    output_file = f"conf/stream/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.conf"
+    output_file = f"conf/conf.d/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
          
         
@@ -105,7 +105,7 @@ def generate_route(route,data):
                 nginx_config += proxy_pass
                 nginx_config += f"}}\n\n"
     
-    output_file = f"conf/conf.d/{str(route['route']['name']).replace(' ','_')}/{str(route['route']['name']).replace(' ','_')}.conf"
+    output_file = f"conf/stream/{str(route['route']['name']).replace(' ','_')}/{str(route['route']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
     
 
