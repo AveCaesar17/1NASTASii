@@ -1,0 +1,62 @@
+ARG ALPINE_VERSION=3.14.9
+
+FROM alpine
+
+#ENV container docker
+## Install Suricata as describe here https://redmine.openinfosecfoundation.org/projects/suricata/wiki/Distributions_Containing_Suricata Repository : https://pkgs.alpinelinux.org/package/edge/community/x86/suricata
+RUN apk update;\
+    apk add iptables \
+            python3 \
+            py3-pip \
+            suricata \
+            sudo \
+            bash;\
+    pip install suricata-update;\
+    pip install requests
+# Install Suricata-update utility https://github.com/OISF/suricata-update
+COPY ./suricata/suricata-update.sh /etc/suricata/suricata-update.sh
+#RUN apk add bash
+# COPY file needed for the Suricata efficiency
+COPY ./suricata/suricata-update-cron /etc/crontabs/suricata-update-cron
+COPY ./suricata/docker-entrypoint.sh /tmp/docker-entrypoint.sh
+COPY ./suricata/suricata.yaml /etc/suricata/suricata.yaml
+COPY ./suricata/rules/generator.py /var/lib/suricata/rules/generator.py
+COPY ./rules.yml /var/lib/suricata/rules/rules.yml
+# Forwarding suricata application logs to stdout
+RUN chmod +x /etc/crontabs/suricata-update-cron;\
+    chmod +x /tmp/docker-entrypoint.sh;\
+    chmod +x /var/lib/suricata/rules/generator.py;\
+    chmod 004 /var/lib/suricata/rules/rules.yml;\
+    chmod 044 /etc/suricata/classification.config;\
+    chmod 044 /etc/suricata/reference.config;\
+    chmod 044 /etc/suricata/threshold.config;\
+    chmod -R 777 /var/log/suricata;\
+    touch /var/log/suricata/fast.log;\
+    touch /var/log/suricata/eve.json;\
+    touch /var/log/suricata/stats.log;\
+    chmod -R 445 /var/lib/;\
+    chmod -R 111 /bin;\
+    chmod 111 /usr/bin/sudo;\
+    chmod 110 /usr/bin/python3;\
+    chmod 110 /usr/bin/luajit-2.1.0-beta3;\
+    chmod 110 /usr/bin/scanelf;\
+    chmod 110 /usr/bin/sudoreplay;\
+    chmod 110 /bin/kill
+
+            
+RUN python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml /var/lib/suricata/rules/suricata.rules;\
+    chmod 444 /var/lib/suricata/rules/suricata.rules
+
+RUN adduser -D user --shell /usr/sbin/nologin
+RUN echo 'user ALL=(ALL) NOPASSWD: /usr/bin/suricata -c /etc/suricata/suricata.yaml -q 0 -v' >> /etc/sudoers;\
+    echo 'user ALL=(ALL) NOPASSWD: /usr/bin/python3 /var/lib/suricata/rules/generator.py /var/lib/suricata/rules/rules.yml /var/lib/suricata/rules/suricata.rules' >> /etc/sudoers;\
+    echo 'user ALL=(ALL) NOPASSWD: /sbin/iptables -t mangle -I PREROUTING -p tcp -m tcp -m mark ! --mark 0x1/0x1 -j NFQUEUE --queue-num 0 --queue-bypass' >> /etc/sudoers;\
+    echo 'user ALL=(ALL) NOPASSWD: /sbin/iptables -I INPUT -j NFQUEUE --queue-bypass' >> /etc/sudoers;\
+    echo 'user ALL=(ALL) NOPASSWD: /sbin/iptables -I OUTPUT -j NFQUEUE --queue-bypass' >> /etc/sudoers
+
+
+RUN chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
+RUN rm /bin/busybox
+USER user
+
+ENTRYPOINT ["bash","/tmp/docker-entrypoint.sh"]

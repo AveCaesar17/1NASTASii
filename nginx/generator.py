@@ -66,7 +66,6 @@ def generate_proxy(proxy,data):
             
                                     
 
-    print(nginx_config)
     output_file = f"{str(proxy['proxy']['name']).replace(' ','_')}.conf"
     create_file(nginx_config,output_file)
          

@@ -5,8 +5,7 @@ FROM alpine:${ALPINE_VERSION}
 ARG OPENRESTY_VERSION=1.21.4.1
 ARG CORERULESET_VERSION=3.3.4
 RUN apk update 
-RUN set -eux; \
-    apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache --virtual .build-deps \
         autoconf \
         automake \
         ca-certificates \
@@ -31,7 +30,17 @@ RUN set -eux; \
         pcre-dev \
         pcre2-dev \
         yajl-dev \
-        zlib-dev
+        zlib-dev \
+        sudo \
+        bash \
+        python3 \
+        py3-pip \
+        certbot \
+        luarocks5.1 \
+        apache2-utils; \
+        luarocks-5.1 install lua-resty-auto-ssl;
+
+
 WORKDIR /opt
 
 RUN git clone https://github.com/SpiderLabs/ModSecurity; \
@@ -80,13 +89,6 @@ COPY ./modsec/main.conf /opt/ModSecurity/main.conf
 COPY ./modsec/ClamAV/modsec_clamav.conf /usr/local/clamav/rules/modsec_clamav.conf
 COPY ./modsec/ClamAV/modsec_clamav.pl /usr/local/clamav/rules/modsec_clamav.pl
 
-
-RUN apk add --update python3 py3-pip && \
-    apk add certbot && \
-    apk add luarocks5.1 && \ 
-    luarocks-5.1 install lua-resty-auto-ssl && \
-    apk add apache2-utils
-
 RUN chown -R 1001:1001 /opt; \
     chown -R 1001:1001 /usr/local/ ;\
     chown -R 1001:1001 /var/run/openresty/;\
@@ -104,6 +106,10 @@ COPY ./hello.sh /hello.sh
 COPY ./nginx/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 
 COPY ./nginx/conf.d /usr/local/openresty/nginx/conf/conf.d
+
+RUN adduser -D user --shell /usr/sbin/nologin
+
+RUN which openssl
 
 CMD ["/entrypoint.sh"]
 
