@@ -54,13 +54,13 @@ def generate_proxy(proxy,data):
                 read_data = f.read()
             output_file = f"certs/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.crt"
             create_file(read_data,output_file)
-            ssl_config += f"    ssl_certificate {output_file};\n"
+            ssl_config += f"    ssl_certificate /usr/local/openresty/nginx/{output_file};\n"
         if "ssl_certificate_key" in proxy['proxy']['endpoint']['ssl']:
             with open(f"{os.getcwd()}/{proxy['proxy']['endpoint']['ssl']['ssl_certificate_key']}", "r") as f:
                 read_data = f.read()
             output_file = f"certs/{str(proxy['proxy']['name']).replace(' ','_')}/{str(proxy['proxy']['name']).replace(' ','_')}.key"
             create_file(read_data,output_file)
-            ssl_config += f"    ssl_certificate_key {output_file}"
+            ssl_config += f"    ssl_certificate_key /usr/local/openresty/nginx/{output_file}"
         nginx_config += ssl_config
     nginx_config += ";\n"
     if "hostname" in proxy['proxy']['endpoint']:
