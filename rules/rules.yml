@@ -1,109 +1,9 @@
 name: test 
 version: 1.0
 config:
-  - rule: 
-      name: Accept SSH
-      action: pass
-      protocol: tcp
-      source: 
-        ip: $EXTERNAL_NET
-        port: any
-      destination:
-        ip: $EXTERNAL_NET
-        port: 22
-      direction: ->
-  - rule: 
-      name: drop icmp 8.8.8.8
-      action: [drop,alert]
-      protocol: icmp
-      source: 
-        ip: any
-        port: any
-      destination:
-        ip: [8.8.8.8,8.8.4.4]
-        port: any
-      direction: ->
-  - rule: 
-      name: drop all
-      action: [drop,alert]
-      protocol: ip
-      source:
-        ip: any
-        port: any
-      destination:
-        ip: any
-        port: any
-      direction: ->
-  - route: 
-      name: forward ssh 
-      protocol: udp
-      source: 
-        ip: any 
-        port: any 
-      destination: 
-        ip: $EXTERNAL_NET
-        port: 2222
-      endpoint: 
-        host: server1 
-        service: ssh
-      direction: ->
-  - rule: 
-      name: import 
-      action: drop
-      import: 
-        url: https://raw.githubusercontent.com/AveCaesar17/1NASTASii/main/ssh.rules
-  - proxy: 
-      name: proxy_pass
-      protocol: tls
-      source: 
-        ip: any 
-        port: any 
-      destination:
-        ip: $EXTERNAL_NET
-        port: 8889
-      endpoint: 
-        upstream:
-          - id: back
-            ssl: true
-            hosts: 
-              - server2
-            service: http
-            options:
-              - keepalive: 8
-          - id: back2
-            ssl: false
-            hosts: 
-              - server1
-            service: http
-            options: 
-              - keepalive: 8
-              - hash: $remote_addr
-        hostname: avecaesar.ru
-        url: 
-          - path: /back
-            upstream_group: back
-          - path: /back2
-            upstream_group: back2
-            options: 
-              - proxy_set_header:        Host $host
-              - proxy_set_header: X-Real-IP $remote_addr
-              - proxy_set_header: X-Forwarded-For $remote_addr
-              
-              - proxy_intercept_errors: "on"
-        ssl: 
-          ssl_certificate: resources/ssl/cert.crt
-          ssl_certificate_key: resources/ssl/cert.key
-        optional:
-          log_format:
-            name: custom_log
-            format: | 
-              '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-        settings: 
-          mds: 
-            file: 
-              - resources/mds/file1
+  !include included_rules/main.yml
+  !include included_rules/routes.yml
+  !include included_rules/proxy.yml
         
 
 hosts: 
@@ -128,6 +28,14 @@ hosts:
         - service: 
             name: http
             port: 80  
+  - host: 
+      name: maxmur 
+      ip: 
+        - 185.124.64.127
+      services:
+        - service: 
+            name: https
+            port: 443
 env: 
   EXTERNAL_NET: 
 

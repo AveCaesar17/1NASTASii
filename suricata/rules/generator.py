@@ -1,6 +1,49 @@
-import sys
 import yaml
+import argparse
+import os
+import sys
+import re
 import requests
+
+
+def replace_include_with_file_content(input_file):
+    
+    file_lines = open(input_file, 'r', encoding="utf-8")
+    content = open(input_file, 'r', encoding="utf-8")
+    
+    lines = file_lines.readlines()        
+    content = content.read()
+    path = str(sys.argv[1])[:str(sys.argv[1]).rfind("/")]
+    os.chdir(path)
+    # Используем регулярное выражение для поиска строк вида "include /path/to/file"
+    include_pattern = r'\s*!include\s+\/?(\S+)'
+    matches = re.findall(include_pattern, content)
+    for match in matches:
+        for i, line in enumerate(lines, 1):
+            if f"!include {match}" in line:
+                for char in line[::-1]:
+                    if str(char) != "!":
+                        line = line[:len(line) - 1]                        
+                    elif str(char) == "!":
+                        line = line[:len(line) - 1]
+                        with open(f"{match}", "r",encoding="utf-8") as f:
+                            included_content = f.readlines()
+                            lines[i-1] = ""  
+                            
+                            for include_lines in included_content[::-1]:
+                                lines.insert(i-1, f"{line}{include_lines}")
+                            lines.insert(i-1, "\n")
+
+                        break
+            #content = content.replace(f'!include {included_file_path}',included_content)
+    content = ""
+    for line in lines: 
+        content += f"{line}"
+    yaml_data = yaml.safe_load(content)
+    #generate_nginx_config(yaml_data)
+    return yaml_data
+
+
 def replace_first_rule(rule_text,rep_rule):
     lines = rule_text.split()
     
@@ -145,7 +188,7 @@ def generate_suricata_rule(rule, sid, action=None):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python script.py <path_to_yaml_file> [output_file]")
+        print("Usage: python generator.py <path_to_yaml_file> [output_file]")
         return
 
     input_yaml_path = sys.argv[1]
@@ -154,9 +197,10 @@ def main():
     if len(sys.argv) >= 3:
         output_rules_path = sys.argv[2]
 
-    with open(input_yaml_path, 'r') as yaml_file:
-        data = yaml.safe_load(yaml_file)
+    # with open(input_yaml_path, 'r') as yaml_file:
+    #     data = yaml.safe_load(yaml_file)
 
+    data = replace_include_with_file_content(input_yaml_path)
     generated_rules = generate_suricata_rules(data['config'],data['hosts'])
     with open(output_rules_path, 'w') as output_file:
         for rule_text in generated_rules:

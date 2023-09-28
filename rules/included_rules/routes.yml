@@ -1,0 +1,13 @@
+- route: 
+    name: forward ssh 
+    protocol: udp
+    source: 
+        ip: any 
+        port: any 
+    destination: 
+        ip: $EXTERNAL_NET
+        port: 2222
+    endpoint: 
+        host: server1 
+        service: ssh
+    direction: ->
