@@ -126,7 +126,7 @@ def genereate_route(hosts,rule, sid,action=None):
         name=rule['name'],
         action=action,
         protocol=rule['protocol'],
-        source_ip="any",
+        source_ip=rule['protocol'],
         source_port="any",
         destination_ip=destination_ips_str,
         destination_port=destination_port,
@@ -168,17 +168,24 @@ def generate_suricata_rule(rule, sid, action=None):
         action = rule['action']
 
     destination_ips = rule['destination']['ip']
+    source_ips = rule['source']['ip']
     if isinstance(destination_ips, list):
         destination_ips_str = ', '.join(destination_ips)
         destination_ips_str = f'[{destination_ips_str}]'
     else:
         destination_ips_str = destination_ips
+    
+    if isinstance(destination_ips, list):
+        source_ips_str = ', '.join(source_ips)
+        source_ips_str = f'[{source_ips_str}]'
+    else:
+        source_ips_str = source_ips
 
     return template.format(
         name=rule['name'],
         action=action,
         protocol=rule['protocol'],
-        source_ip=rule['source']['ip'],
+        source_ip=source_ips_str,
         source_port=rule['source']['port'],
         destination_ip=destination_ips_str,
         destination_port=rule['destination']['port'],
