@@ -33,7 +33,7 @@ RUN chmod +x /etc/crontabs/suricata-update-cron;\
     chmod -R 666 /var/log/;\
     touch /var/log/suricata/fast.log /var/log/suricata/stats.log /var/log/suricata/eve.json;\
     chmod 666 /var/log/suricata/fast.log /var/log/suricata/stats.log /var/log/suricata/eve.json;\
-    chmod -R 666 /var/log/suricata/ 
+    chmod -R 666 /var/log/suricata/;\
     chmod -R 445 /var/lib/;\
     chmod -R 111 /bin;\
     chmod 111 /usr/bin/sudo;\
