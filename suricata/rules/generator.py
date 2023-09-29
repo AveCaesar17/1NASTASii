@@ -168,7 +168,9 @@ def generate_suricata_rule(rule, sid, action=None):
 
     if action is None:
         action = rule['action']
-
+    protocol = rule['protocol']
+    if rule['protocol'] == 'http' or 'https' or 'tls' or 'ssl': 
+        protocol = "tcp"
     destination_ips = rule['destination']['ip']
     source_ips = rule['source']['ip']
     if destination_ips != "any":
