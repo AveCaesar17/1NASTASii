@@ -52,9 +52,7 @@ RUN echo 'user ALL=(ALL) NOPASSWD: /usr/bin/suricata -c /etc/suricata/suricata.y
     echo 'user ALL=(ALL) NOPASSWD: /sbin/iptables -I INPUT -j NFQUEUE --queue-bypass' >> /etc/sudoers;\
     echo 'user ALL=(ALL) NOPASSWD: /sbin/iptables -I OUTPUT -j NFQUEUE --queue-bypass' >> /etc/sudoers
 
-RUN ls -al /var/log/suricata
 RUN chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
-RUN rm /bin/busybox
-USER user
+
 
 ENTRYPOINT ["bash","/tmp/docker-entrypoint.sh"]
