@@ -169,7 +169,7 @@ def generate_suricata_rule(rule, sid, action=None):
     if action is None:
         action = rule['action']
     protocol = rule['protocol']
-    if rule['protocol'] == 'http' or 'https' or 'tls' or 'ssl': 
+    if rule['protocol'] == 'http' or rule['protocol'] == 'https' or rule['protocol'] == 'tls' or rule['protocol'] == 'ssl': 
         protocol = "tcp"
     destination_ips = rule['destination']['ip']
     source_ips = rule['source']['ip']
@@ -189,7 +189,7 @@ def generate_suricata_rule(rule, sid, action=None):
     return template.format(
         name=rule['name'],
         action=action,
-        protocol=rule['protocol'],
+        protocol=protocol,
         source_ip=source_ips,
         source_port=rule['source']['port'],
         destination_ip=destination_ips,
