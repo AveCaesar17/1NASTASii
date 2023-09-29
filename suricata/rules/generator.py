@@ -116,19 +116,28 @@ def genereate_route(hosts,rule, sid,action=None):
                 if service['service']['name'] == rule['endpoint']['service']:
                     destination_ips = host['host']['ip']
                     destination_port = service['service']['port']
-    if isinstance(destination_ips, list):
-        destination_ips_str = ', '.join(destination_ips)
-        destination_ips_str = f'[{destination_ips_str}]'
-    else:
-        destination_ips_str = destination_ips
+                
+    if destination_ips != "any":
+        if isinstance(destination_ips, list):
+            destination_ips = ', '.join(destination_ips)
+            destination_ips = f'[{destination_ips}]'
+        else:
+            destination_ips = destination_ips
+    if source_ips != "any":
+        if isinstance(source_ips, list):
+            source_ips = ', '.join(source_ips)
+            source_ips = f'[{source_ips}]'
+        else:
+            source_ips = source_ips
+    print(source_ips)
 
     return template.format(
         name=rule['name'],
         action=action,
         protocol=rule['protocol'],
-        source_ip=rule['protocol'],
+        source_ip=source_ips,
         source_port="any",
-        destination_ip=destination_ips_str,
+        destination_ip=destination_ips,
         destination_port=destination_port,
         sid=sid,
         rev=rule.get('rev', 1)

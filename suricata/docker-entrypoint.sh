@@ -12,4 +12,4 @@ sudo /sbin/iptables -I INPUT -j NFQUEUE --queue-bypass
 sudo /sbin/iptables -I OUTPUT -j NFQUEUE --queue-bypass
 # Started suricata
 #rm -r /etc/suricata/rules/
-exec /bin/bash -c "/usr/bin/suricata -c /etc/suricata/suricata.yaml -q 0 -v"
+exec /bin/bash -c "sudo /usr/bin/suricata -c /etc/suricata/suricata.yaml -q 0 -v"
